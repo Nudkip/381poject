@@ -5,7 +5,7 @@ const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 const ObjectId = require('mongodb').ObjectID;
 const mongoDBurl = 'mongodb+srv://s1219243:<password>@s1219243-93wjp.mongodb.net/test?retryWrites=true&w=majority';
-const dbName = 's1219243';
+const dbName = 'restaurant';
 
 
 const server = http.createServer((req,res) => {
