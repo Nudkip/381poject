@@ -148,6 +148,8 @@ const server = http.createServer((req,res) => {
 			res.write('</head><body>');
         	res.write(' <header class="w3-container w3-teal">');
 			res.write('<h1>Login/Register</h1>');
+			res.write('      <h3>search</h3>');
+			res.write('      <input type="text" name="FirstName" value="Mickey">');
 			res.write('</header>    ');  
         	res.write(' <h3>Login</h3>');
         	res.write(' <form action="/login" method="post" class="w3-container w3-card-2">');
