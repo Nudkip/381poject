@@ -141,7 +141,7 @@ const server = http.createServer((req,res) => {
 						} catch (err) {
 							console.log('Invalid!');
 						}
-						db.collection('restaurants').insertOne(obj,(err,result) => {
+						db.collection('restaurant').insertOne(obj,(err,result) => {
 							res.writeHead(200, {'Content-Type': 'text/html'}); 
          						res.write('<html>')        
          						res.write('Successful!')
@@ -238,8 +238,8 @@ const insertUser = (db,r,callback) => {
 }
 
 
-const findRestaurants = (db, max, criteria, callback) => {
-	//console.log(`findRestaurants(), criteria = ${JSON.stringify(criteria)}`);
+const findRestaurant = (db, max, criteria, callback) => {
+	//console.log(`findRestaurant(), criteria = ${JSON.stringify(criteria)}`);
 	let criteriaObj = {};
 	try {
 		criteriaObj = JSON.parse(criteria);
@@ -261,15 +261,15 @@ const read_n_print = (res,max,criteria={}) => {
 		console.log("Connected successfully to server");
 		
 		const db = client.db(dbName);
-		findRestaurants(db, max, criteria, (restaurants) => {
+		findRestaurant(db, max, criteria, (restaurant) => {
 			client.close();
 			console.log('Disconnected MongoDB');
 			res.writeHead(200, {"Content-Type": "text/html"});
 			res.write('<html><head><title>Restaurant</title></head>');
-			res.write('<body><H1>Restaurants</H1>');
-			res.write('<H2>Showing '+restaurants.length+' document(s)</H2>');
+			res.write('<body><H1>Restaurant</H1>');
+			res.write('<H2>Showing '+restaurant.length+' document(s)</H2>');
 			res.write('<ol>');
-			for (r of restaurants) {
+			for (r of restaurant) {
 				//console.log(r._id);
 				res.write(`<li><a href='/showdetails?_id=${r._id}'>${r.name}</a></li>`)
 			}
@@ -288,7 +288,7 @@ const showdetails = (res,_id) => {
 		
 		const db = client.db(dbName);
 
-		cursor = db.collection('restaurants').find({_id: ObjectId(_id)});
+		cursor = db.collection('restaurant').find({_id: ObjectId(_id)});
 		cursor.toArray((err,docs) => {
 			assert.equal(err,null);
 			client.close();
