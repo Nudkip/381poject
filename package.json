@@ -1,0 +1,17 @@
+{
+	"name": "ssse3",
+	"description": "COMPS381F_Assignment",
+	"version": "0.0.1",
+	"dependencies": {
+		"mongodb": "3.1",
+		"express": "latest",
+		"cookie-session": "latest",
+		"formidable": "latest"
+	},
+	"scripts": {
+		"start": "node server.js"
+	},
+	"engines": {
+		"node": ">= 6.0.0"
+	}
+}
