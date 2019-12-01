@@ -3,8 +3,8 @@ const url  = require('url');
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 const ObjectId = require('mongodb').ObjectID;
-const mongoDBurl = 'mongodb+srv://s1219243:<password>@s1219243-93wjp.mongodb.net/test?retryWrites=true&w=majority';
-const dbName = 'restaurant';
+const mongoDBurl = 'mongodb+srv://aaron:aaronso@aarondb-ep2mi.mongodb.net/test?retryWrites=true&w=majority';
+const dbName = 's381assignment';
 var session = require('cookie-session');
 var express = require('express');
 const qs = require ('querystring');
@@ -48,7 +48,7 @@ const server = http.createServer((req,res) => {
 							db.collection('user').insertOne(obj,(err,result) => {
 								res.writeHead(200, {'Content-Type': 'text/html'}); 
          						res.write('<html>')   
-         						res.write('<br><a href="/">Register Success</a>')
+         						res.write('<br><a href="/login">Register Success</a>')
         						res.end('</html>') 					
 								});
 						});
@@ -122,39 +122,8 @@ const server = http.createServer((req,res) => {
 			read_n_print(res,parseInt(max),parsedURL.query.criteria);
 			break;
 		case '/create':
-			if (req.method == 'POST') {
-				let data = '';  // message body data
-				req.on('data', (payload) => {
-					data += payload;
-				});
-				req.on('end', () => {  
-					let postdata = qs.parse(data);
-					const client = new MongoClient(mongoDBurl);
-					client.connect((err) => {
-						assert.equal(null,err);
-						console.log("Connected successfully to server");
-						const db = client.db(dbName);
-						try{
-							temp = '{"name" :  "'+ postdata.name + '", "borough" : "' + postdata.borough + '", "cuisine" : "' + postdata.cuisine + '"}';
-							obj ={};
-							obj = JSON.parse(temp);
-						} catch (err) {
-							console.log('Invalid!');
-						}
-						db.collection('restaurant').insertOne(obj,(err,result) => {
-							res.writeHead(200, {'Content-Type': 'text/html'}); 
-         						res.write('<html>')        
-         						res.write('Successful!')
-        						res.end('</html>') 					
-						});
-					});					
-				})	
-				} else {
-					res.writeHead(404, {'Content-Type': 'text/plain'}); 
-					res.end('Error.')
-				}
+			insertDoc(res,parsedURL.query.criteria);
 			break;
-			
 		case '/delete':
 			deleteDoc(res,parsedURL.query.criteria);
 			break;
@@ -171,16 +140,6 @@ const server = http.createServer((req,res) => {
 			break;
 		case '/update':
 			updateDoc(res,parsedURL.query);
-			break;
-		case '/insert':
-			res.writeHead(200,{"Content-Type": "text/html"});
-			res.write('<html><body>');
-			res.write('<form action="/create" method="post">');
-			res.write(`<input type="text" name="name"><br>`);
-			res.write(`<input type="text" name="borough"><br>`);
-			res.write(`<input type="text" name="cuisine"><br>`);
-			res.write('<input type="submit" value="Create">')
-			res.end('</form></body></html>');
 			break;
 		default:
 			res.writeHead(200,{"Content-Type": "text/html"});
@@ -238,8 +197,8 @@ const insertUser = (db,r,callback) => {
 }
 
 
-const findRestaurant = (db, max, criteria, callback) => {
-	//console.log(`findRestaurant(), criteria = ${JSON.stringify(criteria)}`);
+const findRestaurants = (db, max, criteria, callback) => {
+	//console.log(`findRestaurants(), criteria = ${JSON.stringify(criteria)}`);
 	let criteriaObj = {};
 	try {
 		criteriaObj = JSON.parse(criteria);
@@ -261,20 +220,19 @@ const read_n_print = (res,max,criteria={}) => {
 		console.log("Connected successfully to server");
 		
 		const db = client.db(dbName);
-		findRestaurant(db, max, criteria, (restaurant) => {
+		findRestaurants(db, max, criteria, (restaurants) => {
 			client.close();
 			console.log('Disconnected MongoDB');
 			res.writeHead(200, {"Content-Type": "text/html"});
 			res.write('<html><head><title>Restaurant</title></head>');
-			res.write('<body><H1>Restaurant</H1>');
-			res.write('<H2>Showing '+restaurant.length+' document(s)</H2>');
+			res.write('<body><H1>Restaurants</H1>');
+			res.write('<H2>Showing '+restaurants.length+' document(s)</H2>');
 			res.write('<ol>');
-			for (r of restaurant) {
+			for (r of restaurants) {
 				//console.log(r._id);
 				res.write(`<li><a href='/showdetails?_id=${r._id}'>${r.name}</a></li>`)
 			}
 			res.write('</ol>');
-			res.write('<br><a href="/insert">Insert</a>')
 			res.end('</body></html>');
 		});
 	});
@@ -288,7 +246,7 @@ const showdetails = (res,_id) => {
 		
 		const db = client.db(dbName);
 
-		cursor = db.collection('restaurant').find({_id: ObjectId(_id)});
+		cursor = db.collection('restaurants').find({_id: ObjectId(_id)});
 		cursor.toArray((err,docs) => {
 			assert.equal(err,null);
 			client.close();
